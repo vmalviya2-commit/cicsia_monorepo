@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import '@cicsia-nx-monorepo-workspace/shared-ui';
+import { TreeGridComponent } from '@cicsia-nx-monorepo-workspace/shared-ui';
 
 export class SharedUIPanel {
   public static currentPanel: SharedUIPanel | undefined;
@@ -56,15 +56,6 @@ export class SharedUIPanel {
           { Detail: 'Library Name', Value1: 'DFHRPL', Value2: 'DFHRPL' },
           { Detail: 'Module Type', Value1: 'PROGRAM', Value2: 'PROGRAM' }
         ]
-      },
-      {
-        Detail: 'CICS IA',
-        expanded: true,
-        children: [
-          { Detail: 'Collection ID', Value1: 'IATestapps', Value2: 'IAWsimConvert' },
-          { Detail: 'First Run', Value1: '2025-01-31 19:25:37.755826', Value2: '2025-01-31 19:29:42.150023' },
-          { Detail: 'Last Run', Value1: '2025-01-31 19:25:38.086283', Value2: '2025-01-31 19:29:42.570994' }
-        ]
       }
     ];
 
@@ -89,6 +80,13 @@ export class SharedUIPanel {
             h1 {
               margin-bottom: 20px;
             }
+
+            shared-tree-grid {
+              display: block;
+              min-height: 400px;
+              border: 1px solid var(--vscode-widget-border);
+              border-radius: 4px;
+            }
           </style>
         </head>
         <body>
@@ -98,13 +96,50 @@ export class SharedUIPanel {
             id="treeGrid"
           ></shared-tree-grid>
 
-          <script type="module" src="${scriptUri}"></script>
           <script>
+            // Define the custom element if not already defined
+            if (!customElements.get('shared-tree-grid')) {
+              customElements.define('shared-tree-grid', class extends HTMLElement {
+                constructor() {
+                  super();
+                  this.attachShadow({ mode: 'open' });
+                }
+              });
+            }
+
+            // Initialize the tree grid after the DOM is fully loaded
             window.addEventListener('load', () => {
+              console.log('Initializing TreeGrid...');
               const treeGrid = document.getElementById('treeGrid');
+              
               if (treeGrid) {
+                console.log('TreeGrid found, setting data...');
+                // Set the data and columns
                 treeGrid.data = ${JSON.stringify(treeData)};
                 treeGrid.columns = ${JSON.stringify(columns)};
+                
+                // Force an update
+                if (typeof treeGrid.requestUpdate === 'function') {
+                  treeGrid.requestUpdate();
+                }
+              } else {
+                console.error('TreeGrid element not found');
+              }
+            });
+
+            // Listen for messages from the extension
+            window.addEventListener('message', event => {
+              const message = event.data;
+              switch (message.command) {
+                case 'updateData':
+                  const treeGrid = document.getElementById('treeGrid');
+                  if (treeGrid) {
+                    treeGrid.data = message.data;
+                    if (typeof treeGrid.requestUpdate === 'function') {
+                      treeGrid.requestUpdate();
+                    }
+                  }
+                  break;
               }
             });
           </script>

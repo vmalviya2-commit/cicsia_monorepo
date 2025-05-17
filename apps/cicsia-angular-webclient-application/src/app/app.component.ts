@@ -1,6 +1,8 @@
-import { Component, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, OnInit } from '@angular/core';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import '@cicsia-nx-monorepo-workspace/shared-ui';
+
+// Import all components explicitly
+import { TreeGridComponent } from '@cicsia-nx-monorepo-workspace/shared-ui';
 
 @Component({
   standalone: true,
@@ -28,10 +30,11 @@ import '@cicsia-nx-monorepo-workspace/shared-ui';
       display: block;
       border: 1px solid #e0e0e0;
       border-radius: 4px;
+      min-height: 400px; /* Add minimum height to see the container */
     }
   `]
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements OnInit, AfterViewInit {
   private columns: string[] = ['Detail', 'Value1', 'Value2'];
 
   private treeData = [
@@ -71,18 +74,28 @@ export class AppComponent implements AfterViewInit {
 
   constructor(private elementRef: ElementRef) { }
 
+  ngOnInit() {
+    // Ensure the custom element is defined
+    if (!customElements.get('shared-tree-grid')) {
+      customElements.define('shared-tree-grid', TreeGridComponent);
+    }
+  }
+
   ngAfterViewInit() {
-    // Wait for the custom element to be defined
-    customElements.whenDefined('shared-tree-grid').then(() => {
+    // Wait for DOM to be ready
+    setTimeout(() => {
       const treeGrid = this.elementRef.nativeElement.querySelector('shared-tree-grid');
       if (treeGrid) {
-        // Set properties using Object.assign and request update
+        console.log('TreeGrid found, setting data...'); // Debug log
         Object.assign(treeGrid, {
           data: this.treeData,
           columns: this.columns
         });
+        // Force update
         treeGrid.requestUpdate();
+      } else {
+        console.error('TreeGrid element not found'); // Debug log
       }
-    });
+    }, 0);
   }
 }
