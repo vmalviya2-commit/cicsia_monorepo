@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Extension",
+            "type": "extensionHost",
+            "request": "launch",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}/apps/cicsia-vscode-extension-for-zowe"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/apps/cicsia-vscode-extension-for-zowe/dist/**/*.js",
+                "${workspaceFolder}/apps/cicsia-vscode-extension-for-zowe/dist/**/*.js.map"
+            ],
+            "sourceMapPathOverrides": {
+                "webpack:///./src/*": "${workspaceFolder}/apps/cicsia-vscode-extension-for-zowe/src/*"
+            },
+            "preLaunchTask": "Watch Extension"
+        }
+    ]
+}

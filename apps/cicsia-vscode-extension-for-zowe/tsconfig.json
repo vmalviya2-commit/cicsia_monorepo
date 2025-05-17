@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "sourceMap": true,
+    "rootDir": "../../",
+    "strict": true,
+    "outDir": "../../dist/apps/cicsia-vscode-extension-for-zowe",
+    "skipLibCheck": true,
+    "types": ["node", "vscode", "jest"],
+    "baseUrl": ".",
+    "paths": {
+      "@cicsia-nx-monorepo-workspace/shared-ui": ["../../libs/shared-ui/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*", "*.ts", "../../libs/shared-ui/src/**/*"],
+  "exclude": ["node_modules", ".vscode-test"]
+}
